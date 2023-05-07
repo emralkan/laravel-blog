@@ -3,13 +3,15 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Page;
 use App\Models\Contact;
 use Illuminate\Support\Facades\DB;
+use Mail;
+
 
 class Homepage extends Controller
 {
@@ -45,7 +47,9 @@ class Homepage extends Controller
 
     public function contact(){
         return view('front.contact');
-    }
+    } 
+
+
     public function contactpost(Request $request){
         $rules=[
             'name'=>'required|min:3',
@@ -58,12 +62,25 @@ class Homepage extends Controller
         if ($validate->fails()){
             return redirect()->route('contact')->withErrors($validate)->withInput();
         }
-        $contact = new Contact();
-    $contact->name=$request->name;
-    $contact->email=$request->email;
-    $contact->topic=$request->topic;
-    $contact->message=$request->message;
-    $contact->save();
+        Mail::send([],[], function($message) use($request){
+            $message->from('blogsitesi@gmail.com' , 'Blog Sitesi');
+            $message->to('emralkaan7@gmail.com');
+            $message->setBody('
+            Mesajı Gönderen :'.$request->name.'<br/>
+            Mesajı Gönderen Mail :'.$request->mail.'<br/>
+            Mesaj Konusu : '.$request->topic.'<br/>
+            Mesaj : '.$request->message.'<br/> <br/> 
+            Mesaj Gönderilme Tarihi :'.$request->created_at.'' , 'text/html');
+            $message->subject($request->name. ' ' . 'Kişisinden Yeni Mail Geldi.');
+
+        });
+   //  $  = new Contact();
+   // $contact->name=$request->name;
+   // $contact->email=$request->email;
+   // $contact->topic=$request->topic;
+   // $contact->message=$request->message;
+   // $contact->save();
+
     return redirect('contact')->with('success' , 'Mesajınız İletildi!');
     }
 

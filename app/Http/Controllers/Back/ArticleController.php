@@ -23,7 +23,7 @@ class ArticleController extends Controller
     {
         $posts=Post::orderBy('created_at', 'ASC')->get();
 
-        return view('back.pages.posts' , compact('posts'));
+        return view('back.articles.index' , compact('posts'));
 
     }
 
@@ -54,7 +54,7 @@ class ArticleController extends Controller
         $post=new Post;
         $post->title=$request->title;
         $post->category_id=$request->category;
-        $post->conntent=$request->conntent;
+        $post->content=$request->conntent;
         $post->slug = str::slug($request->title);
 
         if ($request->hasFile('image')){
@@ -110,7 +110,7 @@ class ArticleController extends Controller
         $post=Post::findOrFail($id);
         $post->title=$request->title;
         $post->category_id=$request->category;
-        $post->conntent=$request->conntent;
+        $post->content=$request->conntent;
         $post->slug = str::slug($request->title);
 
         if ($request->hasFile('image')){
